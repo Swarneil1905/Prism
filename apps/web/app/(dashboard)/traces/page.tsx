@@ -325,7 +325,7 @@ export default function TracesPage() {
 
             {/* When */}
             <span style={{ fontSize: 12, color: "var(--text-3)" }}>
-              {timeAgo(trace.createdAt)}
+              {timeAgo(trace.startedAt)}
             </span>
 
             {/* Status */}

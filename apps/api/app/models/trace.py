@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 import uuid
+from typing import TYPE_CHECKING
 from sqlalchemy import String, Text, Numeric, Integer, TIMESTAMP, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.session import Base
 from datetime import datetime
+
+if TYPE_CHECKING:
+    from app.models.eval import Eval
+    from app.models.span import Span
 
 
 class Trace(Base):

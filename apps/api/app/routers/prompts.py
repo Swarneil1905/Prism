@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 from app.db.session import get_db
-from app.models.prompt import PromptVersion, PromptVersionStats
+from app.models.prompt import PromptVersion
 from app.schemas.prompt import PromptVersionOut, PromptVersionCreate, PromptSummary
 from typing import List
 

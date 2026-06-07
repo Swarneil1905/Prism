@@ -3,8 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.db.session import get_db
 from app.models.eval import Eval
-from app.models.trace import Trace
-from app.schemas.eval import EvalOut, EvalListResponse, EvalStats, EvalOverride
+from app.schemas.eval import EvalListResponse, EvalStats, EvalOverride
 from app.services.eval import run_eval
 from typing import Optional
 from datetime import datetime, timedelta
@@ -49,7 +48,7 @@ async def eval_stats(db: AsyncSession = Depends(get_db)):
     overall_pass = (await db.execute(select(func.count(Eval.id)).where(Eval.verdict == "pass"))).scalar_one()
     overall_total = (await db.execute(select(func.count(Eval.id)))).scalar_one()
     avg_score = (await db.execute(select(func.avg(Eval.score)))).scalar_one() or 0.0
-    pending = (await db.execute(select(func.count(Eval.id)).where(Eval.human_override == None, Eval.verdict == "fail"))).scalar_one()
+    pending = (await db.execute(select(func.count(Eval.id)).where(Eval.human_override.is_(None), Eval.verdict == "fail"))).scalar_one()
 
     return EvalStats(
         pass_rate_7d=pass_rate_7d,

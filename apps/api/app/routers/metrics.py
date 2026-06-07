@@ -4,7 +4,7 @@ from sqlalchemy import select, func
 from app.db.session import get_db
 from app.models.trace import Trace
 from app.models.eval import Eval
-from datetime import datetime, timedelta
+from datetime import datetime
 
 router = APIRouter()
 

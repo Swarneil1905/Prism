@@ -4,7 +4,6 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 from app.db.session import get_db
 from app.models.trace import Trace
-from app.models.span import Span
 from app.schemas.trace import TraceOut, TraceCreate, TracePatch, TraceListResponse
 from typing import Optional
 import uuid

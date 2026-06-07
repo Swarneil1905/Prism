@@ -112,7 +112,7 @@ def seed_sqlite():
 
     conn.commit()
     conn.close()
-    print(f"[seed] demo.db seeded — 500 customers, 5000 orders, 10 products")
+    print("[seed] demo.db seeded — 500 customers, 5000 orders, 10 products")
 
 
 # ── PostgreSQL traces/evals/prompts ────────────────────────────────────────

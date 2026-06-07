@@ -7,7 +7,6 @@ from contextvars import ContextVar
 from typing import Optional
 from datetime import datetime
 
-from .cost import compute_cost
 
 _active_workflow_id: ContextVar[Optional[str]] = ContextVar("_active_workflow_id", default=None)
 _active_trace_id: ContextVar[Optional[str]] = ContextVar("_active_trace_id", default=None)
@@ -34,7 +33,7 @@ def trace(name: str, workflow_id: Optional[str] = None, span_type: str = "llm", 
             try:
                 result = await fn(*args, **kwargs)
                 status = "ok"
-            except Exception as e:
+            except Exception:
                 status = "error"
                 raise
             finally:

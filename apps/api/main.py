@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.db.session import engine, Base
 from app.routers import traces, spans, evals, prompts, explorer, metrics, auth
 from app.core.config import settings
 

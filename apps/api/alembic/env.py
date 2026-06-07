@@ -1,10 +1,12 @@
 import asyncio
+import os
 from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
-import os
+from app.db.session import Base
+import app.models  # noqa: F401 - register models for Alembic autogenerate
 
 config = context.config
 
@@ -14,10 +16,6 @@ if config.config_file_name is not None:
 # Override URL from environment so Docker can inject the correct host
 if os.environ.get("DATABASE_URL"):
     config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
-
-# Import all models so Alembic can detect them
-from app.db.session import Base
-from app.models import Trace, Span, Eval, PromptVersion, PromptVersionStats
 
 target_metadata = Base.metadata
 

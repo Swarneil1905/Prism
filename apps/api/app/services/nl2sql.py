@@ -2,7 +2,6 @@
 import sqlite3
 import re
 import uuid
-import os
 from pathlib import Path
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -123,7 +122,6 @@ class NL2SQLService:
             fix_ms = int((datetime.utcnow() - t_exec).total_seconds() * 1000)
             await self._save_span(trace.id, "sql-retry", "llm", fix_prompt, sql, fix_ms, MODEL)
             rows, cols = self._execute(db_path, sql)
-        exec_ms = int((datetime.utcnow() - t_exec).total_seconds() * 1000)
 
         total_ms = int((datetime.utcnow() - t0).total_seconds() * 1000)
 

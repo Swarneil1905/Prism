@@ -9,6 +9,8 @@ app = FastAPI(title="Prism API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    # Allow any Railway preview/production web URL when CORS_ORIGINS is misconfigured
+    allow_origin_regex=r"https://.*\.up\.railway\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
+from sqlalchemy.orm import selectinload
 from app.db.session import get_db
 from app.models.trace import Trace
 from app.models.span import Span
@@ -35,7 +36,7 @@ async def list_traces(
     total_q = select(func.count()).select_from(q.subquery())
     total = (await db.execute(total_q)).scalar_one()
 
-    q = q.offset((page - 1) * limit).limit(limit)
+    q = q.offset((page - 1) * limit).limit(limit).options(selectinload(Trace.spans))
     rows = (await db.execute(q)).scalars().all()
     return TraceListResponse(items=rows, total=total, page=page)
 

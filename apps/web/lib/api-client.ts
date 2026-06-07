@@ -42,6 +42,7 @@ export const api = {
     query: (question: string, database_url?: string) =>
       request<ExplorerResult>("/api/v1/explorer/query", { method: "POST", body: JSON.stringify({ question, database_url }) }),
     schema: () => request<{ tables: { name: string; columns: { name: string; type: string }[]; rowCount?: number }[] }>("/api/v1/explorer/schema"),
+    preview: (tableName: string) => request<{ table: string; columns: string[]; rows: Record<string, unknown>[]; count: number }>(`/api/v1/explorer/preview/${encodeURIComponent(tableName)}`),
     history: () => request<{ items: { question: string; sql: string; created_at: string }[] }>("/api/v1/explorer/history"),
   },
   metrics: {

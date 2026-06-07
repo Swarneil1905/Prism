@@ -1,0 +1,46 @@
+name: CI — API
+
+on:
+  push:
+    paths: ["apps/api/**", "sdk/**"]
+  pull_request:
+    paths: ["apps/api/**", "sdk/**"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: prism_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r apps/api/requirements.txt --break-system-packages
+
+      - name: Lint (ruff)
+        run: ruff check apps/api/ sdk/
+
+      - name: Type check (mypy)
+        run: mypy apps/api/app/ --ignore-missing-imports
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/prism_test
+        run: pytest apps/api/tests/ -v --tb=short

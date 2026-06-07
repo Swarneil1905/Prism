@@ -24,13 +24,12 @@ function DataTable({ columns, rows, maxHeight = 380 }: { columns: string[]; rows
     <div style={{ border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, overflow: "auto", maxHeight }}>
       <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 400 }}>
         <thead>
-          <tr style={{ background: "#16161A", position: "sticky", top: 0 }}>
+          <tr style={{ background: "var(--surface-raised)", position: "sticky", top: 0 }}>
             {columns.map(col => (
               <th key={col} style={{
-                fontSize: 10, fontWeight: 600, textTransform: "uppercase",
-                letterSpacing: "0.08em", color: "var(--text-3)",
+                fontSize: 12, fontWeight: 500, color: "var(--text-3)",
                 padding: "8px 14px", textAlign: "left", whiteSpace: "nowrap",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                borderBottom: "1px solid var(--border)",
               }}>{col}</th>
             ))}
           </tr>
@@ -229,13 +228,12 @@ export default function ExplorerPage() {
           border: "1px solid var(--border)", alignSelf: "start",
         }}>
           <div style={{
-            padding: "10px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)",
-            fontSize: 10, fontWeight: 600, textTransform: "uppercase",
-            letterSpacing: "0.08em", color: "var(--text-3)",
+            padding: "10px 14px", borderBottom: "1px solid var(--border)",
+            fontSize: 12, fontWeight: 500, color: "var(--text-3)",
           }}>
             Schema &middot; {schema?.tables.length ?? 0} tables
             {schema && (
-              <div style={{ fontSize: 9, fontWeight: 400, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", marginTop: 2 }}>
+              <div style={{ fontSize: 11, color: "var(--text-3)", marginTop: 2 }}>
                 {schema.tables.reduce((sum, t) => sum + (t.rowCount ?? 0), 0).toLocaleString()} total rows
               </div>
             )}
@@ -260,7 +258,7 @@ export default function ExplorerPage() {
                 background: "var(--surface)", border: "1px solid rgba(255,255,255,0.10)",
                 borderRadius: 8, color: "var(--text-1)", outline: "none", boxSizing: "border-box",
               }}
-              onFocus={e => { e.currentTarget.style.borderColor = "rgba(108,99,255,0.4)" }}
+              onFocus={e => { e.currentTarget.style.borderColor = "rgba(99,102,241,0.4)" }}
               onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)" }}
             />
             <button
@@ -269,7 +267,7 @@ export default function ExplorerPage() {
               style={{
                 position: "absolute", right: 6, top: 7, height: 38, padding: "0 18px",
                 fontSize: 13, fontWeight: 600,
-                background: loading ? "rgba(108,99,255,0.5)" : "var(--indigo)",
+                background: loading ? "rgba(99,102,241,0.5)" : "var(--indigo)",
                 color: "white", border: "none", borderRadius: 6, cursor: "pointer",
                 opacity: !question.trim() ? 0.5 : 1,
               }}
@@ -281,7 +279,7 @@ export default function ExplorerPage() {
           {/* Example chips */}
           {!result && !loading && !error && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-3)", marginBottom: 8 }}>
                 Try an example
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -308,10 +306,8 @@ export default function ExplorerPage() {
               background: "rgba(240,74,74,0.08)", border: "1px solid rgba(240,74,74,0.2)",
               borderRadius: 8, padding: "12px 16px",
             }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--red)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
-                Error
-              </div>
-              <div style={{ fontSize: 13, color: "rgba(240,74,74,0.9)", lineHeight: 1.5 }}>{error}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--red)", marginBottom: 4 }}>Error</div>
+              <div style={{ fontSize: 13, color: "var(--red)", opacity: 0.85, lineHeight: 1.5 }}>{error}</div>
             </div>
           )}
 
@@ -320,15 +316,15 @@ export default function ExplorerPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {/* SQL */}
               <div>
-                <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-3)", marginBottom: 8 }}>
                   Generated SQL
                 </div>
                 <div style={{
-                  background: "#0E0E10", borderRadius: 6, padding: "12px 16px",
-                  border: "1px solid rgba(255,255,255,0.06)",
+                  background: "var(--surface-raised)", borderRadius: 6, padding: "12px 16px",
+                  border: "1px solid var(--border)",
                 }}>
                   <pre style={{
-                    fontFamily: "var(--font-jetbrains-mono)", fontSize: 12.5, color: "#9b94ff",
+                    fontFamily: "var(--font-jetbrains-mono)", fontSize: 12.5, color: "#818CF8",
                     lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap", overflowX: "auto",
                   }}>
                     {result.sql}
@@ -339,11 +335,11 @@ export default function ExplorerPage() {
               {/* Table */}
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)" }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-3)" }}>
                     Results &middot; {result.rows.length} row{result.rows.length !== 1 ? "s" : ""}
                   </div>
                   <div style={{ display: "flex", gap: 14, fontSize: 11, fontFamily: "var(--font-jetbrains-mono)", color: "var(--text-3)" }}>
-                    <span>trace <span style={{ color: "var(--indigo)" }}>{result.traceId.slice(0, 8)}</span></span>
+                    <span>trace <span style={{ color: "var(--text-2)" }}>{result.traceId.slice(0, 8)}</span></span>
                     <span>${result.costUsd.toFixed(5)}</span>
                     <span>{result.latencyMs}ms</span>
                   </div>
@@ -356,7 +352,7 @@ export default function ExplorerPage() {
           {/* History */}
           {history.length > 0 && !result && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-3)", marginBottom: 8 }}>
                 Recent queries
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -393,12 +389,12 @@ export default function ExplorerPage() {
           display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12,
         }}>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)" }}>
-              Data Preview
+            <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-3)" }}>
+              Data preview
             </div>
             {preview && (
               <div style={{ fontSize: 12, color: "var(--text-2)", marginTop: 2 }}>
-                <span style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--indigo)" }}>{preview.table}</span>
+                <code style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--text-1)" }}>{preview.table}</code>
                 {" "}table &mdash; showing {preview.rows.length.toLocaleString()} of {preview.count.toLocaleString()} rows
               </div>
             )}

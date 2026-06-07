@@ -34,3 +34,33 @@ body {
 .font-mono, code, pre {
   font-family: var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, monospace;
 }
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 3px;
+}
+
+/* Focus ring — override browser default with a consistent style */
+:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+button, a, input, textarea, select {
+  outline: none;
+}
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}

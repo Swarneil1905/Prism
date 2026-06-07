@@ -11,12 +11,13 @@ function fmtDate(iso: string) {
 function StatPill({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div style={{
-      display: "flex", flexDirection: "column", gap: 2,
-      background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: "10px 14px",
-      border: "1px solid rgba(255,255,255,0.06)",
+      display: "flex", flexDirection: "column", gap: 4,
+      background: "var(--surface)", borderRadius: 6, padding: "12px 14px",
+      border: "1px solid var(--border)",
     }}>
-      <div style={{ fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)" }}>{label}</div>
-      <div style={{ fontSize: 16, fontWeight: 700, color: color ?? "var(--text-1)", fontFamily: "var(--font-jetbrains-mono)" }}>{value}</div>
+      <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-3)" }}>{label}</div>
+      <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-0.02em",
+        color: color ?? "var(--text-1)", fontFamily: "var(--font-jetbrains-mono)" }}>{value}</div>
     </div>
   )
 }
@@ -143,7 +144,7 @@ export default function PromptsPage() {
         <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 20, alignItems: "start" }}>
           {/* Left: prompt list + version history */}
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 6, paddingLeft: 2 }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-3)", marginBottom: 8, paddingLeft: 2 }}>
               Prompts ({promptNames.length})
             </div>
             {promptNames.map(p => (
@@ -151,9 +152,9 @@ export default function PromptsPage() {
                 <div
                   onClick={() => loadVersions(p.name)}
                   style={{
-                    background: activeName === p.name ? "rgba(108,99,255,0.08)" : "var(--surface)",
+                    background: activeName === p.name ? "var(--indigo-muted)" : "var(--surface)",
                     borderRadius: 8, padding: "12px 14px", cursor: "pointer",
-                    border: `1px solid ${activeName === p.name ? "rgba(108,99,255,0.3)" : "rgba(255,255,255,0.06)"}`,
+                    border: `1px solid ${activeName === p.name ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.06)"}`,
                     transition: "border-color 0.12s, background 0.12s",
                   }}
                   onMouseEnter={e => { if (activeName !== p.name) e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)" }}
@@ -165,7 +166,7 @@ export default function PromptsPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5 }}>
                     <span style={{
                       fontSize: 10, fontWeight: 600, color: "var(--indigo)",
-                      background: "rgba(108,99,255,0.12)", borderRadius: 3, padding: "1px 6px",
+                      background: "var(--indigo-muted)", borderRadius: 3, padding: "1px 6px",
                     }}>
                       {p.version_count} {p.version_count === 1 ? "version" : "versions"}
                     </span>
@@ -182,8 +183,8 @@ export default function PromptsPage() {
                         style={{
                           display: "flex", alignItems: "center", gap: 8,
                           padding: "8px 12px", borderRadius: 6, cursor: "pointer",
-                          background: selected?.id === v.id ? "rgba(108,99,255,0.10)" : "rgba(255,255,255,0.02)",
-                          border: `1px solid ${selected?.id === v.id ? "rgba(108,99,255,0.25)" : "rgba(255,255,255,0.05)"}`,
+                          background: selected?.id === v.id ? "var(--indigo-muted)" : "rgba(255,255,255,0.02)",
+                          border: `1px solid ${selected?.id === v.id ? "rgba(99,102,241,0.25)" : "rgba(255,255,255,0.05)"}`,
                         }}
                         onMouseEnter={e => { if (selected?.id !== v.id) e.currentTarget.style.background = "rgba(255,255,255,0.04)" }}
                         onMouseLeave={e => { if (selected?.id !== v.id) e.currentTarget.style.background = "rgba(255,255,255,0.02)" }}
@@ -191,7 +192,7 @@ export default function PromptsPage() {
                         <span style={{ width: 6, height: 6, borderRadius: "50%", background: selected?.id === v.id ? "var(--indigo)" : "rgba(255,255,255,0.15)", flexShrink: 0 }} />
                         <span style={{
                           fontFamily: "var(--font-jetbrains-mono)", fontSize: 11,
-                          background: "rgba(108,99,255,0.12)", color: "var(--indigo)", borderRadius: 3, padding: "1px 5px",
+                          background: "var(--indigo-muted)", color: "var(--indigo)", borderRadius: 3, padding: "1px 5px",
                         }}>v{v.version}</span>
                         <span style={{ fontSize: 11, color: "var(--text-3)", flex: 1 }}>{fmtDate(v.createdAt)}</span>
                       </div>
@@ -211,7 +212,7 @@ export default function PromptsPage() {
                   <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text-1)" }}>{selected.name}</span>
                   <span style={{
                     fontFamily: "var(--font-jetbrains-mono)", fontSize: 12,
-                    background: "rgba(108,99,255,0.12)", color: "var(--indigo)", borderRadius: 4, padding: "2px 8px",
+                    background: "var(--indigo-muted)", color: "var(--indigo)", borderRadius: 4, padding: "2px 8px",
                   }}>v{selected.version}</span>
                 </div>
                 <div style={{ fontSize: 11, color: "var(--text-3)" }}>{fmtDate(selected.createdAt)}</div>
@@ -220,7 +221,7 @@ export default function PromptsPage() {
               {/* Content */}
               <div style={{
                 fontFamily: "var(--font-jetbrains-mono)", fontSize: 13, color: "var(--text-2)",
-                background: "#0E0E10", border: "1px solid rgba(255,255,255,0.06)",
+                background: "var(--surface-raised)", border: "1px solid var(--border)",
                 borderRadius: 8, padding: "16px 18px", lineHeight: 1.75,
                 whiteSpace: "pre-wrap", minHeight: 180,
               }}>
@@ -230,8 +231,8 @@ export default function PromptsPage() {
               {/* Stats */}
               {selectedStats && (
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 10 }}>
-                    Performance (this version)
+                  <div style={{ fontSize: 12, fontWeight: 500, color: "var(--text-3)", marginBottom: 10 }}>
+                    Performance — this version
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10 }}>
                     <StatPill label="Traces" value={selectedStats.traceCount.toString()} />

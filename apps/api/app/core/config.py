@@ -12,10 +12,18 @@ def parse_cors_origins(value: str) -> List[str]:
     if not stripped:
         return ["http://localhost:3000"]
     if stripped.startswith("["):
-        return json.loads(stripped)
-    if "," in stripped:
-        return [origin.strip() for origin in stripped.split(",") if origin.strip()]
-    return [stripped]
+        origins = json.loads(stripped)
+    elif "," in stripped:
+        origins = [origin.strip() for origin in stripped.split(",") if origin.strip()]
+    else:
+        origins = [stripped]
+
+    normalized = []
+    for origin in origins:
+        if origin and not origin.startswith(("http://", "https://")):
+            origin = f"https://{origin}"
+        normalized.append(origin)
+    return normalized
 
 
 class Settings(BaseSettings):

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 import uuid
@@ -6,16 +6,16 @@ import uuid
 
 class EvalOut(BaseModel):
     id: uuid.UUID
-    trace_id: uuid.UUID
+    traceId: uuid.UUID = Field(validation_alias="trace_id")
     verdict: str
     score: Optional[float] = None
     reasoning: Optional[str] = None
-    eval_type: str
-    judge_model: Optional[str] = None
-    created_at: datetime
-    human_override: Optional[str] = None
+    evalType: str = Field(validation_alias="eval_type")
+    judgeModel: Optional[str] = Field(None, validation_alias="judge_model")
+    createdAt: datetime = Field(validation_alias="created_at")
+    humanOverride: Optional[str] = Field(None, validation_alias="human_override")
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class EvalListResponse(BaseModel):

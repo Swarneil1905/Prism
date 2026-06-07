@@ -1,6 +1,6 @@
 """NL2SQL engine — 4-step pipeline: schema introspection, SQL generation, execution, formatting."""
 import sqlite3
-import json
+import re
 import uuid
 import os
 from pathlib import Path
@@ -32,6 +32,13 @@ class NL2SQLService:
 
     def _db_path(self, database_url: str | None) -> str:
         return str(DEMO_DB) if not database_url else database_url
+
+    def _clean_sql(self, raw: str) -> str:
+        """Strip markdown fencing that LLMs sometimes include in SQL output."""
+        text = raw.strip()
+        text = re.sub(r'^```(?:sql)?\s*\n?', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'\n?```\s*$', '', text)
+        return text.strip()
 
     def _introspect(self, db_path: str) -> str:
         conn = sqlite3.connect(db_path)
@@ -95,7 +102,7 @@ class NL2SQLService:
             model=MODEL, max_tokens=512, system=SQL_SYSTEM,
             messages=[{"role": "user", "content": prompt}],
         )
-        sql = resp.content[0].text.strip()
+        sql = self._clean_sql(resp.content[0].text)
         gen_ms = int((datetime.utcnow() - t_gen).total_seconds() * 1000)
         in_tok = resp.usage.input_tokens
         out_tok = resp.usage.output_tokens
@@ -112,7 +119,7 @@ class NL2SQLService:
                 model=MODEL, max_tokens=512, system=FIX_SYSTEM,
                 messages=[{"role": "user", "content": fix_prompt}],
             )
-            sql = fix_resp.content[0].text.strip()
+            sql = self._clean_sql(fix_resp.content[0].text)
             fix_ms = int((datetime.utcnow() - t_exec).total_seconds() * 1000)
             await self._save_span(trace.id, "sql-retry", "llm", fix_prompt, sql, fix_ms, MODEL)
             rows, cols = self._execute(db_path, sql)
@@ -149,6 +156,21 @@ class NL2SQLService:
             tables_info.append({"name": t, "columns": cols, "rowCount": row_count})
         conn.close()
         return {"tables": tables_info}
+
+    async def get_preview(self, table_name: str, limit: int = 1000) -> dict:
+        """Return up to `limit` rows from a table. Table name is validated against sqlite_master."""
+        conn = sqlite3.connect(str(DEMO_DB))
+        cur = conn.cursor()
+        # Validate table name — never trust user input in SQL
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
+        if not cur.fetchone():
+            conn.close()
+            return {"table": table_name, "columns": [], "rows": [], "count": 0}
+        cur.execute(f'SELECT * FROM "{table_name}" LIMIT ?', (limit,))
+        cols = [d[0] for d in cur.description]
+        rows = [dict(zip(cols, r)) for r in cur.fetchall()]
+        conn.close()
+        return {"table": table_name, "columns": cols, "rows": rows, "count": len(rows)}
 
     async def get_history(self) -> dict:
         from sqlalchemy import select

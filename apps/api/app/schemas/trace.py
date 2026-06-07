@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 import uuid
@@ -6,35 +6,35 @@ import uuid
 
 class SpanOut(BaseModel):
     id: uuid.UUID
-    trace_id: uuid.UUID
+    traceId: uuid.UUID = Field(validation_alias="trace_id")
     name: str
     model: Optional[str] = None
     prompt: Optional[str] = None
     response: Optional[str] = None
-    input_tokens: Optional[int] = None
-    output_tokens: Optional[int] = None
-    cost_usd: Optional[float] = None
-    latency_ms: Optional[int] = None
-    started_at: datetime
-    span_type: str
+    inputTokens: Optional[int] = Field(None, validation_alias="input_tokens")
+    outputTokens: Optional[int] = Field(None, validation_alias="output_tokens")
+    costUsd: Optional[float] = Field(None, validation_alias="cost_usd")
+    latencyMs: Optional[int] = Field(None, validation_alias="latency_ms")
+    startedAt: datetime = Field(validation_alias="started_at")
+    spanType: str = Field(validation_alias="span_type")
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class TraceOut(BaseModel):
     id: uuid.UUID
-    workflow_id: str
+    workflowId: str = Field(validation_alias="workflow_id")
     name: Optional[str] = None
     input: Optional[str] = None
     output: Optional[str] = None
     status: str
-    started_at: datetime
-    ended_at: Optional[datetime] = None
-    total_cost: Optional[float] = None
-    total_latency: Optional[int] = None
+    startedAt: datetime = Field(validation_alias="started_at")
+    endedAt: Optional[datetime] = Field(None, validation_alias="ended_at")
+    totalCost: Optional[float] = Field(None, validation_alias="total_cost")
+    totalLatency: Optional[int] = Field(None, validation_alias="total_latency")
     spans: Optional[List[SpanOut]] = None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class TraceCreate(BaseModel):

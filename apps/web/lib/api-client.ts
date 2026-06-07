@@ -17,7 +17,17 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
     headers,
   })
-  if (!res.ok) throw new Error(`API error ${res.status}`)
+  if (!res.ok) {
+    let detail = `API error ${res.status}`
+    try {
+      const body = (await res.json()) as { detail?: string | Array<{ msg?: string }> }
+      if (typeof body.detail === "string") detail = body.detail
+      else if (Array.isArray(body.detail) && body.detail[0]?.msg) detail = body.detail[0].msg
+    } catch {
+      // ignore non-JSON error bodies
+    }
+    throw new Error(detail)
+  }
   return res.json() as Promise<T>
 }
 

@@ -1,7 +1,12 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
-from app.services.nl2sql import NL2SQLService
+from app.services.nl2sql import (
+    ExplorerConfigError,
+    ExplorerLlmError,
+    ExplorerSqlError,
+    NL2SQLService,
+)
 from pydantic import BaseModel
 from typing import Optional
 
@@ -16,8 +21,14 @@ class ExplorerQuery(BaseModel):
 @router.post("/query")
 async def run_query(body: ExplorerQuery, db: AsyncSession = Depends(get_db)):
     service = NL2SQLService(db)
-    result = await service.run(body.question, body.database_url)
-    return result
+    try:
+        return await service.run(body.question, body.database_url)
+    except ExplorerConfigError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ExplorerLlmError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except ExplorerSqlError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/schema")

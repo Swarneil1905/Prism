@@ -86,7 +86,7 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
             fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)",
             background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
             borderRadius: 6, padding: "12px 14px", lineHeight: 1.65, whiteSpace: "pre-wrap",
-          }}>{trace.input ?? "—"}</div>
+          }}>{trace.input ?? ""}</div>
         </div>
 
         {/* Output */}
@@ -122,7 +122,7 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
                     <span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, color: "var(--text-2)" }}>{span.name}</span>
                   </div>
                   <span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 11, color: "var(--text-3)" }}>
-                    {span.latencyMs != null ? `${span.latencyMs}ms` : "—"}
+                    {span.latencyMs != null ? `${span.latencyMs}ms` : ""}
                   </span>
                 </div>
                 <div style={{ height: 6, background: "rgba(255,255,255,0.04)", borderRadius: 3, overflow: "hidden" }}>
@@ -152,8 +152,8 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
         display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12,
       }}>
         {[
-          { label: "Total Cost", value: trace.totalCost != null ? `$${trace.totalCost.toFixed(4)}` : "—" },
-          { label: "Latency", value: trace.totalLatency != null ? `${trace.totalLatency.toLocaleString()}ms` : "—" },
+          { label: "Total Cost", value: trace.totalCost != null ? `$${trace.totalCost.toFixed(4)}` : "" },
+          { label: "Latency", value: trace.totalLatency != null ? `${trace.totalLatency.toLocaleString()}ms` : "" },
           { label: "Status", value: <StatusDot status={trace.status} /> },
         ].map(({ label, value }) => (
           <div key={label}>
@@ -303,13 +303,13 @@ export default function TracesPage() {
               {trace.input ?? <span style={{ color: "var(--text-3)", fontStyle: "italic" }}>no input</span>}
             </div>
             <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)", textAlign: "right" }}>
-              {trace.spans?.length ?? "—"}
+              {trace.spans?.length ?? 0}
             </div>
             <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)" }}>
-              {trace.totalCost != null ? `$${trace.totalCost.toFixed(4)}` : "—"}
+              {trace.totalCost != null ? `$${trace.totalCost.toFixed(4)}` : ""}
             </div>
             <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)" }}>
-              {trace.totalLatency != null ? `${trace.totalLatency.toLocaleString()}ms` : "—"}
+              {trace.totalLatency != null ? `${trace.totalLatency.toLocaleString()}ms` : ""}
             </div>
             <div style={{ fontSize: 11, color: "var(--text-3)" }}>
               {timeAgo(trace.startedAt)}

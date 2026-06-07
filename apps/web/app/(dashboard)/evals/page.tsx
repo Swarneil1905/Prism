@@ -22,7 +22,7 @@ function VerdictBadge({ verdict, override }: { verdict: string; override?: strin
 }
 
 function ScoreBar({ score }: { score: number | null }) {
-  if (score == null) return <span style={{ color: "var(--text-3)", fontSize: 12 }}>—</span>
+  if (score == null) return <span style={{ color: "var(--text-3)", fontSize: 12 }}>N/A</span>
   const pct = Math.round(score * 100)
   const color = score > 0.8 ? "var(--green)" : score > 0.5 ? "var(--amber)" : "var(--red)"
   return (

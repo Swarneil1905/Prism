@@ -26,9 +26,14 @@ FIX_SYSTEM = (
 
 
 class NL2SQLService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession | None = None):
         self.db = db
         self.client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+
+    def _require_db(self) -> AsyncSession:
+        if self.db is None:
+            raise RuntimeError("Database session required")
+        return self.db
 
     def _db_path(self, database_url: str | None) -> str:
         return str(DEMO_DB) if not database_url else database_url
@@ -65,13 +70,15 @@ class NL2SQLService:
         return rows, cols
 
     async def _save_trace(self, workflow_id: str, question: str) -> Trace:
+        db = self._require_db()
         trace = Trace(workflow_id=workflow_id, name="nl2sql-query", input=question)
-        self.db.add(trace)
-        await self.db.commit()
-        await self.db.refresh(trace)
+        db.add(trace)
+        await db.commit()
+        await db.refresh(trace)
         return trace
 
     async def _save_span(self, trace_id, name, span_type, prompt, response, latency_ms, model=None, input_tokens=None, output_tokens=None, cost_usd=None):
+        db = self._require_db()
         span = Span(
             trace_id=trace_id, name=name, span_type=span_type,
             model=model, prompt=prompt, response=response,
@@ -79,8 +86,8 @@ class NL2SQLService:
             output_tokens=output_tokens, cost_usd=cost_usd,
             started_at=datetime.utcnow(),
         )
-        self.db.add(span)
-        await self.db.commit()
+        db.add(span)
+        await db.commit()
 
     async def run(self, question: str, database_url: str | None = None) -> dict:
         db_path = self._db_path(database_url)
@@ -131,7 +138,7 @@ class NL2SQLService:
         trace.ended_at = datetime.utcnow()
         trace.total_latency = total_ms
         trace.total_cost = cost
-        await self.db.commit()
+        await self._require_db().commit()
 
         return {
             "traceId": str(trace.id),
@@ -143,6 +150,9 @@ class NL2SQLService:
         }
 
     async def get_schema(self) -> dict:
+        if not DEMO_DB.exists():
+            from data.seed_demo import seed_sqlite
+            seed_sqlite()
         conn = sqlite3.connect(str(DEMO_DB))
         cur = conn.cursor()
         cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -172,8 +182,13 @@ class NL2SQLService:
         return {"table": table_name, "columns": cols, "rows": rows, "count": len(rows)}
 
     async def get_history(self) -> dict:
-        from sqlalchemy import select
-        from app.models.trace import Trace
-        q = select(Trace).where(Trace.name == "nl2sql-query").order_by(Trace.started_at.desc()).limit(10)
-        rows = (await self.db.execute(q)).scalars().all()
-        return {"items": [{"question": r.input, "sql": r.output, "created_at": str(r.started_at)} for r in rows]}
+        if self.db is None:
+            return {"items": []}
+        try:
+            from sqlalchemy import select
+            from app.models.trace import Trace
+            q = select(Trace).where(Trace.name == "nl2sql-query").order_by(Trace.started_at.desc()).limit(10)
+            rows = (await self.db.execute(q)).scalars().all()
+            return {"items": [{"question": r.input, "sql": r.output, "created_at": str(r.started_at)} for r in rows]}
+        except Exception:
+            return {"items": []}

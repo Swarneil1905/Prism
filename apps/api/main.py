@@ -2,16 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import traces, spans, evals, prompts, explorer, metrics, auth
-from app.core.config import settings
 
 app = FastAPI(title="Prism API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    # Allow any Railway preview/production web URL when CORS_ORIGINS is misconfigured
-    allow_origin_regex=r"https://.*\.up\.railway\.app",
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

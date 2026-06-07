@@ -21,9 +21,8 @@ async def run_query(body: ExplorerQuery, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/schema")
-async def get_schema(db: AsyncSession = Depends(get_db)):
-    service = NL2SQLService(db)
-    return await service.get_schema()
+async def get_schema():
+    return await NL2SQLService().get_schema()
 
 
 @router.get("/preview/{table_name}")

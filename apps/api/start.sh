@@ -1,10 +1,23 @@
 #!/bin/sh
 set -e
 
-PORT="${PORT:-8000}"
+# Railway injects PORT; ignore invalid overrides like "AUTO"
+case "${PORT}" in
+  ""|AUTO|auto) PORT=8000 ;;
+esac
 echo "[start] listening on port ${PORT}"
 
-echo "[start] waiting for database..."
+# Boot API immediately so Railway healthchecks and routing work
+echo "[start] starting api server..."
+uvicorn main:app --host 0.0.0.0 --port "${PORT}" --proxy-headers &
+UVICORN_PID=$!
+
+cleanup() {
+  kill "$UVICORN_PID" 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
+
+echo "[start] running database migrations..."
 attempt=0
 until alembic upgrade head; do
   attempt=$((attempt + 1))
@@ -16,8 +29,9 @@ until alembic upgrade head; do
   sleep 3
 done
 
-echo "[start] seeding demo data in background..."
+echo "[start] seeding demo data..."
+python -c "from data.seed_demo import seed_sqlite; seed_sqlite()"
 python data/seed_demo.py &
 
-echo "[start] starting api server..."
-exec uvicorn main:app --host 0.0.0.0 --port "${PORT}"
+echo "[start] api ready"
+wait "$UVICORN_PID"

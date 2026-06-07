@@ -67,20 +67,13 @@ export default function PromptsPage() {
 
   return (
     <div style={{ maxWidth: 1100 }}>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-1)", margin: 0, letterSpacing: "-0.02em" }}>Prompt Library</h1>
-          <p style={{ fontSize: 13, color: "var(--text-3)", margin: "4px 0 0" }}>
-            Version every prompt · track performance · roll back any time
-          </p>
-        </div>
+      {/* Action bar */}
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20 }}>
         <button
           onClick={() => setShowNew(v => !v)}
           style={{
-            height: 34, padding: "0 16px", fontSize: 13, fontWeight: 600, borderRadius: 6,
+            height: 32, padding: "0 14px", fontSize: 13, fontWeight: 500, borderRadius: 6,
             background: "var(--indigo)", color: "white", border: "none", cursor: "pointer",
-            letterSpacing: "-0.01em",
           }}
         >+ New Version</button>
       </div>
@@ -88,8 +81,8 @@ export default function PromptsPage() {
       {/* New prompt form */}
       {showNew && (
         <div style={{
-          background: "var(--surface)", borderRadius: 10, padding: 20, marginBottom: 20,
-          border: "1px solid rgba(108,99,255,0.25)",
+          background: "var(--surface)", borderRadius: 8, padding: 20, marginBottom: 20,
+          border: "1px solid rgba(99,102,241,0.25)",
         }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-1)", marginBottom: 14 }}>Create new prompt version</div>
           <input

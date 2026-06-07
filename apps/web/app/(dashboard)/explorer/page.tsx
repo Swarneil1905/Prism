@@ -95,7 +95,7 @@ function SchemaBrowser({ schema, selectedTable, onSelectTable }: {
             style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
               padding: "8px 12px", borderRadius: 6, cursor: "pointer",
-              background: selectedTable === t.name ? "rgba(108,99,255,0.12)" : openTable === t.name ? "rgba(108,99,255,0.06)" : "transparent",
+              background: selectedTable === t.name ? "var(--indigo-muted)" : openTable === t.name ? "rgba(99,102,241,0.06)" : "transparent",
               color: selectedTable === t.name ? "var(--indigo)" : openTable === t.name ? "var(--indigo)" : "var(--text-2)",
               borderLeft: selectedTable === t.name ? "2px solid var(--indigo)" : "2px solid transparent",
             }}
@@ -208,22 +208,14 @@ export default function ExplorerPage() {
 
   return (
     <div style={{ maxWidth: 1200 }}>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-1)", margin: 0, letterSpacing: "-0.02em" }}>
-            SQL Explorer
-          </h1>
-          <p style={{ fontSize: 13, color: "var(--text-3)", margin: "4px 0 0" }}>
-            Ask any question about your data in plain English
-          </p>
-        </div>
+      {/* Badge */}
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 20 }}>
         <div style={{
-          display: "flex", alignItems: "center", gap: 6, height: 26, padding: "0 10px",
-          background: "rgba(108,99,255,0.08)", border: "1px solid rgba(108,99,255,0.2)",
+          display: "flex", alignItems: "center", gap: 6, height: 24, padding: "0 10px",
+          background: "var(--indigo-muted)", border: "1px solid rgba(99,102,241,0.2)",
           borderRadius: 20, fontSize: 11, color: "var(--indigo)", fontWeight: 500,
         }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
           </svg>
           Powered by Claude Haiku
@@ -233,8 +225,8 @@ export default function ExplorerPage() {
       <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: 20 }}>
         {/* Schema sidebar */}
         <div style={{
-          background: "var(--surface)", borderRadius: 10, overflow: "hidden",
-          border: "1px solid rgba(255,255,255,0.06)", alignSelf: "start",
+          background: "var(--surface)", borderRadius: 8, overflow: "hidden",
+          border: "1px solid var(--border)", alignSelf: "start",
         }}>
           <div style={{
             padding: "10px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)",

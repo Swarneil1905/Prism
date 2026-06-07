@@ -35,12 +35,12 @@ const PrismMark = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
     <defs>
       <linearGradient id="prism-grad" x1="0" y1="0" x2="20" y2="20" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#6C63FF" />
-        <stop offset="100%" stopColor="#4A9CF0" />
+        <stop offset="0%" stopColor="#6366F1" />
+        <stop offset="100%" stopColor="#3B82F6" />
       </linearGradient>
     </defs>
     <polygon points="10,1 19,17 1,17" fill="url(#prism-grad)" />
-    <polygon points="10,5.5 16,16 4,16" fill="#0C0C0E" opacity="0.55" />
+    <polygon points="10,5.5 16,16 4,16" fill="#09090B" opacity="0.55" />
   </svg>
 )
 
@@ -58,13 +58,13 @@ export default function Sidebar() {
 
   return (
     <aside style={{
-      width: 220,
+      width: "var(--sidebar-w)",
       height: "100vh",
       position: "fixed",
       left: 0,
       top: 0,
       background: "var(--surface)",
-      borderRight: "1px solid rgba(255,255,255,0.06)",
+      borderRight: "1px solid var(--border)",
       display: "flex",
       flexDirection: "column",
       zIndex: 40,
@@ -74,21 +74,28 @@ export default function Sidebar() {
         display: "flex",
         alignItems: "center",
         gap: 9,
-        padding: "20px 16px 18px",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "18px 16px",
+        borderBottom: "1px solid var(--border)",
       }}>
         <PrismMark />
         <span style={{
-          fontFamily: "var(--font-inter), Inter, sans-serif",
           fontWeight: 700,
-          fontSize: 16,
-          letterSpacing: "-0.02em",
+          fontSize: 15,
+          letterSpacing: "-0.025em",
           color: "var(--text-1)",
         }}>Prism</span>
       </div>
 
       {/* Nav */}
-      <nav style={{ flex: 1, padding: "10px 8px" }}>
+      <nav style={{ flex: 1, padding: "8px 8px" }}>
+        <div style={{
+          fontSize: 10,
+          fontWeight: 600,
+          textTransform: "uppercase",
+          letterSpacing: "0.07em",
+          color: "var(--text-4)",
+          padding: "10px 10px 6px",
+        }}>Observability</div>
         {NAV.map(({ label, href, Icon }) => {
           const active = pathname.startsWith(href)
           return (
@@ -98,33 +105,32 @@ export default function Sidebar() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 9,
-                height: 38,
+                gap: 8,
+                height: 36,
                 padding: "0 10px",
                 borderRadius: 6,
                 fontSize: 13,
-                fontWeight: active ? 600 : 500,
+                fontWeight: active ? 500 : 400,
                 textDecoration: "none",
-                color: active ? "var(--indigo)" : "var(--text-2)",
-                background: active ? "rgba(108,99,255,0.10)" : "transparent",
+                color: active ? "var(--text-1)" : "var(--text-3)",
+                background: active ? "rgba(255,255,255,0.07)" : "transparent",
                 marginBottom: 1,
-                transition: "background 0.12s, color 0.12s",
-                borderLeft: active ? "2px solid var(--indigo)" : "2px solid transparent",
+                transition: "background 0.1s, color 0.1s",
               }}
               onMouseEnter={(e) => {
                 if (!active) {
                   e.currentTarget.style.background = "rgba(255,255,255,0.04)"
-                  e.currentTarget.style.color = "var(--text-1)"
+                  e.currentTarget.style.color = "var(--text-2)"
                 }
               }}
               onMouseLeave={(e) => {
                 if (!active) {
                   e.currentTarget.style.background = "transparent"
-                  e.currentTarget.style.color = "var(--text-2)"
+                  e.currentTarget.style.color = "var(--text-3)"
                 }
               }}
             >
-              <span style={{ opacity: active ? 1 : 0.7 }}>
+              <span style={{ color: active ? "var(--indigo)" : "currentColor", flexShrink: 0 }}>
                 <Icon />
               </span>
               {label}
@@ -133,23 +139,20 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Status footer */}
+      {/* Footer */}
       <div style={{
         padding: "12px 16px",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderTop: "1px solid var(--border)",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{
             width: 6, height: 6, borderRadius: "50%",
             background: "var(--green)",
-            boxShadow: "0 0 6px var(--green)",
             display: "inline-block",
             flexShrink: 0,
           }} />
-          <span style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 500 }}>demo.db connected</span>
-        </div>
-        <div style={{ fontSize: 10, color: "var(--text-3)", fontFamily: "var(--font-jetbrains-mono)" }}>
-          prism v0.1.0
+          <span style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 400 }}>demo.db</span>
+          <span style={{ fontSize: 10, color: "var(--text-4)", fontFamily: "var(--font-jetbrains-mono)", marginLeft: "auto" }}>v0.1.0</span>
         </div>
       </div>
     </aside>

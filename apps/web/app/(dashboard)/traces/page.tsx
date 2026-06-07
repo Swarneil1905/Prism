@@ -19,31 +19,29 @@ function StatusDot({ status }: { status: string }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
-      fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em",
+      fontSize: 11, fontWeight: 500,
       color: ok ? "var(--green)" : "var(--red)",
-      background: ok ? "rgba(52,201,122,0.10)" : "rgba(240,74,74,0.10)",
-      borderRadius: 4, padding: "3px 8px",
     }}>
-      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "currentColor", display: "inline-block" }} />
-      {ok ? "pass" : "fail"}
+      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "currentColor", flexShrink: 0, display: "inline-block" }} />
+      {ok ? "Pass" : "Fail"}
     </span>
   )
 }
 
 function SpanTypeTag({ type }: { type: string }) {
   const colors: Record<string, string> = {
-    llm: "rgba(108,99,255,0.15)",
-    tool: "rgba(240,161,52,0.15)",
-    retrieval: "rgba(74,156,240,0.15)",
+    llm: "rgba(99,102,241,0.15)",
+    tool: "rgba(245,158,11,0.15)",
+    retrieval: "rgba(59,130,246,0.15)",
   }
   const text: Record<string, string> = {
-    llm: "#9b94ff",
+    llm: "#818CF8",
     tool: "var(--amber)",
     retrieval: "var(--blue)",
   }
   return (
     <span style={{
-      fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
+      fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em",
       background: colors[type] ?? "rgba(255,255,255,0.08)",
       color: text[type] ?? "var(--text-3)",
       borderRadius: 3, padding: "2px 6px",
@@ -59,32 +57,36 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
   return (
     <div style={{
       position: "fixed", right: 0, top: 0, width: 500, height: "100vh",
-      background: "var(--surface)", borderLeft: "1px solid rgba(255,255,255,0.06)",
+      background: "var(--surface)", borderLeft: "1px solid var(--border)",
       display: "flex", flexDirection: "column", zIndex: 50,
-      boxShadow: "-24px 0 60px rgba(0,0,0,0.4)",
+      boxShadow: "-24px 0 60px rgba(0,0,0,0.5)",
     }}>
       {/* Header */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "14px 20px", borderBottom: "1px solid var(--border)",
       }}>
         <div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-3)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>Trace</div>
-          <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 13, color: "var(--indigo)" }}>{trace.id.slice(0, 16)}…</div>
+          <div style={{ fontSize: 11, fontWeight: 500, color: "var(--text-3)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Trace detail</div>
+          <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--indigo)" }}>{trace.id.slice(0, 16)}&#8230;</div>
         </div>
         <button
           onClick={onClose}
-          style={{ background: "rgba(255,255,255,0.06)", border: "none", color: "var(--text-2)", width: 28, height: 28, borderRadius: 6, cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center" }}
-        >✕</button>
+          style={{
+            background: "rgba(255,255,255,0.06)", border: "none", color: "var(--text-2)",
+            width: 28, height: 28, borderRadius: 6, cursor: "pointer", fontSize: 14,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >&#10005;</button>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
         {/* Input */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 8 }}>Input</div>
+          <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-3)", marginBottom: 8 }}>Input</div>
           <div style={{
             fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)",
-            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)",
             borderRadius: 6, padding: "12px 14px", lineHeight: 1.65, whiteSpace: "pre-wrap",
           }}>{trace.input ?? ""}</div>
         </div>
@@ -92,10 +94,10 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
         {/* Output */}
         {trace.output && (
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 8 }}>Output</div>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-3)", marginBottom: 8 }}>Output</div>
             <div style={{
               fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)",
-              background: "rgba(52,201,122,0.04)", border: "1px solid rgba(52,201,122,0.12)",
+              background: "rgba(16,185,129,0.04)", border: "1px solid rgba(16,185,129,0.12)",
               borderRadius: 6, padding: "12px 14px", lineHeight: 1.65, whiteSpace: "pre-wrap",
             }}>{trace.output}</div>
           </div>
@@ -103,17 +105,17 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
 
         {/* Span waterfall */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 12 }}>Span Waterfall</div>
+          <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-3)", marginBottom: 12 }}>Span Waterfall</div>
           {spans.length === 0 && (
             <div style={{ fontSize: 13, color: "var(--text-3)", fontStyle: "italic" }}>No spans recorded</div>
           )}
           {spans.map((span, i) => {
             const pct = Math.max(4, ((span.latencyMs ?? 0) / maxLatency) * 90)
             const barColor = span.spanType === "llm"
-              ? "rgba(108,99,255,0.6)"
+              ? "rgba(99,102,241,0.6)"
               : span.spanType === "tool"
-              ? "rgba(240,161,52,0.5)"
-              : "rgba(74,156,240,0.5)"
+              ? "rgba(245,158,11,0.5)"
+              : "rgba(59,130,246,0.5)"
             return (
               <div key={span.id} style={{ marginBottom: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
@@ -125,7 +127,7 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
                     {span.latencyMs != null ? `${span.latencyMs}ms` : ""}
                   </span>
                 </div>
-                <div style={{ height: 6, background: "rgba(255,255,255,0.04)", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{ height: 5, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
                   <div style={{
                     height: "100%", width: `${pct}%`, borderRadius: 3,
                     background: barColor,
@@ -135,7 +137,7 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
                 {span.model && (
                   <div style={{ display: "flex", gap: 12, marginTop: 4, fontSize: 10, color: "var(--text-3)", fontFamily: "var(--font-jetbrains-mono)" }}>
                     <span>{span.model}</span>
-                    {span.inputTokens != null && <span>↑{span.inputTokens} ↓{span.outputTokens ?? 0} tok</span>}
+                    {span.inputTokens != null && <span>{span.inputTokens} / {span.outputTokens ?? 0} tok</span>}
                     {span.costUsd != null && <span>${span.costUsd.toFixed(5)}</span>}
                   </div>
                 )}
@@ -148,17 +150,17 @@ function TraceDetail({ trace, onClose }: { trace: Trace; onClose: () => void }) 
       {/* Footer stats */}
       <div style={{
         padding: "14px 20px",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderTop: "1px solid var(--border)",
         display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12,
       }}>
         {[
-          { label: "Total Cost", value: trace.totalCost != null ? `$${trace.totalCost.toFixed(4)}` : "" },
-          { label: "Latency", value: trace.totalLatency != null ? `${trace.totalLatency.toLocaleString()}ms` : "" },
-          { label: "Status", value: <StatusDot status={trace.status} /> },
+          { label: "Total Cost", value: trace.totalCost != null ? `$${trace.totalCost.toFixed(4)}` : "n/a" },
+          { label: "Latency",    value: trace.totalLatency != null ? `${trace.totalLatency.toLocaleString()}ms` : "n/a" },
+          { label: "Status",     value: <StatusDot status={trace.status} /> },
         ].map(({ label, value }) => (
           <div key={label}>
-            <div style={{ fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 5 }}>{label}</div>
-            <div style={{ fontFamily: typeof value === "string" ? "var(--font-jetbrains-mono)" : undefined, fontSize: 13, fontWeight: 600, color: "var(--text-1)" }}>{value}</div>
+            <div style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-3)", marginBottom: 5 }}>{label}</div>
+            <div style={{ fontFamily: typeof value === "string" ? "var(--font-jetbrains-mono)" : undefined, fontSize: 13, fontWeight: 500, color: "var(--text-1)" }}>{value}</div>
           </div>
         ))}
       </div>
@@ -191,95 +193,98 @@ export default function TracesPage() {
     return true
   })
 
-  const COLS: { key: string; label: string; w: string }[] = [
-    { key: "id", label: "Trace ID", w: "110px" },
-    { key: "input", label: "Query", w: "1fr" },
-    { key: "spans", label: "Spans", w: "60px" },
-    { key: "cost", label: "Cost", w: "80px" },
-    { key: "latency", label: "Latency", w: "90px" },
-    { key: "started", label: "Started", w: "80px" },
-    { key: "status", label: "Status", w: "80px" },
+  const passCount = traces.filter(t => t.status === "ok").length
+  const failCount = traces.length - passCount
+
+  const COLS: { key: string; label: string; w: string; align?: string }[] = [
+    { key: "id",      label: "Trace ID", w: "110px" },
+    { key: "input",   label: "Query",    w: "1fr"   },
+    { key: "spans",   label: "Spans",    w: "56px",  align: "right" },
+    { key: "cost",    label: "Cost",     w: "84px",  align: "right" },
+    { key: "latency", label: "Latency",  w: "88px",  align: "right" },
+    { key: "started", label: "Started",  w: "84px"  },
+    { key: "status",  label: "Status",   w: "72px"  },
   ]
   const gridTemplate = COLS.map(c => c.w).join(" ")
 
   return (
     <div style={{ maxWidth: 1100 }}>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-1)", margin: 0, letterSpacing: "-0.02em" }}>Traces</h1>
-          <p style={{ fontSize: 13, color: "var(--text-3)", margin: "4px 0 0" }}>
-            Every LLM call, tool invocation, and workflow run
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search query or trace ID…"
-            style={{
-              height: 34, padding: "0 12px", fontSize: 13, borderRadius: 6,
-              background: "var(--surface)", border: "1px solid rgba(255,255,255,0.08)",
-              color: "var(--text-1)", outline: "none", width: 240,
-            }}
-          />
-        </div>
-      </div>
 
       {/* Stat cards */}
       {stats && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10, marginBottom: 24 }}>
           {[
-            { label: "Total Traces", value: stats.total_traces.toLocaleString(), sub: `+${stats.traces_today} today` },
-            { label: "Avg Cost / Trace", value: `$${stats.avg_cost.toFixed(4)}`, mono: true },
-            { label: "Avg Latency", value: `${Math.round(stats.avg_latency_ms).toLocaleString()}ms`, mono: true },
-            { label: "Pass Rate", value: `${(stats.pass_rate * 100).toFixed(1)}%`, accent: stats.pass_rate > 0.9 ? "green" : "amber" },
+            { label: "Total Traces",    value: stats.total_traces.toLocaleString(), sub: `+${stats.traces_today} today` },
+            { label: "Avg Cost",        value: `$${stats.avg_cost.toFixed(4)}`,     mono: true },
+            { label: "Avg Latency",     value: `${Math.round(stats.avg_latency_ms).toLocaleString()}ms`, mono: true },
+            { label: "Pass Rate",       value: `${(stats.pass_rate * 100).toFixed(1)}%`, accent: stats.pass_rate > 0.9 ? "green" : "amber" },
           ].map(({ label, value, sub, mono, accent }) => (
             <div key={label} style={{
-              background: "var(--surface)", borderRadius: 10, padding: "16px 18px",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "var(--surface)", borderRadius: 8, padding: "14px 16px",
+              border: "1px solid var(--border)",
             }}>
-              <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)", marginBottom: 10 }}>{label}</div>
+              <div style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: 8 }}>{label}</div>
               <div style={{
-                fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em",
+                fontSize: 22, fontWeight: 600, letterSpacing: "-0.02em",
                 fontFamily: mono ? "var(--font-jetbrains-mono)" : undefined,
                 color: accent === "green" ? "var(--green)" : accent === "amber" ? "var(--amber)" : "var(--text-1)",
               }}>{value}</div>
-              {sub && <div style={{ fontSize: 11, color: "var(--text-3)", marginTop: 4 }}>{sub}</div>}
+              {sub && <div style={{ fontSize: 11, color: "var(--text-3)", marginTop: 3 }}>{sub}</div>}
             </div>
           ))}
         </div>
       )}
 
-      {/* Filter tabs */}
-      <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
-        {(["all", "pass", "fail"] as Filter[]).map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            style={{
-              height: 28, padding: "0 14px", fontSize: 12, fontWeight: 500, borderRadius: 5,
-              border: "1px solid " + (filter === f ? "rgba(108,99,255,0.4)" : "rgba(255,255,255,0.07)"),
-              background: filter === f ? "rgba(108,99,255,0.12)" : "transparent",
-              color: filter === f ? "var(--indigo)" : "var(--text-3)",
-              cursor: "pointer", textTransform: "capitalize",
-            }}
-          >{f === "all" ? `All (${traces.length})` : f === "pass" ? `Pass (${traces.filter(t => t.status === "ok").length})` : `Fail (${traces.filter(t => t.status !== "ok").length})`}</button>
-        ))}
+      {/* Filter bar */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--border)", marginBottom: 16 }}>
+        <div style={{ display: "flex", gap: 0 }}>
+          {(["all", "pass", "fail"] as Filter[]).map(f => {
+            const label = f === "all" ? `All (${traces.length})` : f === "pass" ? `Pass (${passCount})` : `Fail (${failCount})`
+            const active = filter === f
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                style={{
+                  padding: "0 0 10px",
+                  marginRight: 24,
+                  fontSize: 13, fontWeight: 500,
+                  border: "none",
+                  borderBottom: `2px solid ${active ? "var(--indigo)" : "transparent"}`,
+                  background: "transparent",
+                  color: active ? "var(--text-1)" : "var(--text-3)",
+                  cursor: "pointer",
+                  transition: "color 0.1s, border-color 0.1s",
+                }}
+              >{label}</button>
+            )
+          })}
+        </div>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search traces..."
+          style={{
+            height: 30, padding: "0 12px", fontSize: 12, borderRadius: 6,
+            background: "var(--surface)", border: "1px solid var(--border)",
+            color: "var(--text-1)", outline: "none", width: 220,
+            marginBottom: 10,
+          }}
+        />
       </div>
 
       {/* Table */}
-      <div style={{ border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, overflow: "hidden" }}>
+      <div style={{ border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
         {/* Header */}
-        <div style={{ display: "grid", gridTemplateColumns: gridTemplate, alignItems: "center", padding: "0 16px", height: 34, background: "#16161A", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: gridTemplate, alignItems: "center", padding: "0 16px", height: 36, background: "var(--surface-raised)", gap: 12 }}>
           {COLS.map(c => (
-            <div key={c.key} style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)" }}>{c.label}</div>
+            <div key={c.key} style={{ fontSize: 10, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", textAlign: c.align as "right" | undefined }}>{c.label}</div>
           ))}
         </div>
 
         {/* Rows */}
         {filtered.length === 0 && (
-          <div style={{ padding: "40px 0", textAlign: "center", color: "var(--text-3)", fontSize: 13 }}>
+          <div style={{ padding: "48px 0", textAlign: "center", color: "var(--text-3)", fontSize: 13 }}>
             No traces found. Instrument your code with the Prism SDK to start capturing traces.
           </div>
         )}
@@ -289,9 +294,9 @@ export default function TracesPage() {
             onClick={() => setSelected(trace)}
             style={{
               display: "grid", gridTemplateColumns: gridTemplate, alignItems: "center",
-              padding: "0 16px", height: 42, gap: 12,
-              borderBottom: "1px solid rgba(255,255,255,0.04)",
-              cursor: "pointer", transition: "background 0.1s",
+              padding: "0 16px", height: 44, gap: 12,
+              borderBottom: "1px solid var(--border)",
+              cursor: "pointer",
             }}
             onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.025)")}
             onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
@@ -305,10 +310,10 @@ export default function TracesPage() {
             <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)", textAlign: "right" }}>
               {trace.spans?.length ?? 0}
             </div>
-            <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)" }}>
+            <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)", textAlign: "right" }}>
               {trace.totalCost != null ? `$${trace.totalCost.toFixed(4)}` : ""}
             </div>
-            <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)" }}>
+            <div style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12, color: "var(--text-2)", textAlign: "right" }}>
               {trace.totalLatency != null ? `${trace.totalLatency.toLocaleString()}ms` : ""}
             </div>
             <div style={{ fontSize: 11, color: "var(--text-3)" }}>
@@ -326,7 +331,7 @@ export default function TracesPage() {
       {selected && (
         <div
           onClick={() => setSelected(null)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 49 }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 49 }}
         />
       )}
     </div>

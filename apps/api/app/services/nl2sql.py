@@ -128,16 +128,15 @@ class NL2SQLService:
         await self.db.commit()
 
         return {
-            "trace_id": str(trace.id),
+            "traceId": str(trace.id),
             "sql": sql,
             "rows": rows,
             "columns": cols,
-            "latency_ms": total_ms,
-            "cost_usd": float(cost),
+            "latencyMs": total_ms,
+            "costUsd": float(cost),
         }
 
     async def get_schema(self) -> dict:
-        schema = self._introspect(str(DEMO_DB))
         conn = sqlite3.connect(str(DEMO_DB))
         cur = conn.cursor()
         cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
@@ -145,7 +144,9 @@ class NL2SQLService:
         for (t,) in cur.fetchall():
             cur.execute(f"PRAGMA table_info({t})")
             cols = [{"name": c[1], "type": c[2]} for c in cur.fetchall()]
-            tables_info.append({"name": t, "columns": cols})
+            cur.execute(f"SELECT COUNT(*) FROM {t}")
+            row_count = cur.fetchone()[0]
+            tables_info.append({"name": t, "columns": cols, "rowCount": row_count})
         conn.close()
         return {"tables": tables_info}
 

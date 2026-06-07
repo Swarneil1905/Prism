@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 import uuid
@@ -9,10 +9,10 @@ class PromptVersionOut(BaseModel):
     name: str
     version: int
     content: str
-    created_at: datetime
+    createdAt: datetime = Field(validation_alias="created_at")
     stats: Optional[dict] = None
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class PromptVersionCreate(BaseModel):

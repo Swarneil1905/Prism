@@ -3,12 +3,13 @@ import { useEffect, useState, useRef } from "react"
 import { api } from "@/lib/api-client"
 import type { ExplorerResult } from "@/lib/types"
 
-// ── Types ──────────────────────────────────────────────────────────────────
+// -- Types ------------------------------------------------------------------
 type SchemaColumn = { name: string; type: string }
 type SchemaTable  = { name: string; columns: SchemaColumn[]; rowCount?: number }
 type SchemaInfo   = { tables: SchemaTable[] }
+type PreviewData  = { table: string; columns: string[]; rows: Record<string, unknown>[]; count: number }
 
-// ── Example queries ────────────────────────────────────────────────────────
+// -- Example queries --------------------------------------------------------
 const EXAMPLES = [
   "What are the top 5 products by total revenue?",
   "Show me average order value by country",
@@ -17,14 +18,14 @@ const EXAMPLES = [
   "What is the total revenue by product category?",
 ]
 
-// ── Result table ───────────────────────────────────────────────────────────
-function ResultTable({ result }: { result: ExplorerResult }) {
+// -- Result table -----------------------------------------------------------
+function DataTable({ columns, rows, maxHeight = 380 }: { columns: string[]; rows: Record<string, unknown>[]; maxHeight?: number }) {
   return (
-    <div style={{ border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, overflow: "auto", maxHeight: 380 }}>
+    <div style={{ border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, overflow: "auto", maxHeight }}>
       <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 400 }}>
         <thead>
           <tr style={{ background: "#16161A", position: "sticky", top: 0 }}>
-            {result.columns.map(col => (
+            {columns.map(col => (
               <th key={col} style={{
                 fontSize: 10, fontWeight: 600, textTransform: "uppercase",
                 letterSpacing: "0.08em", color: "var(--text-3)",
@@ -35,28 +36,28 @@ function ResultTable({ result }: { result: ExplorerResult }) {
           </tr>
         </thead>
         <tbody>
-          {result.rows.map((row, i) => (
+          {rows.map((row, i) => (
             <tr
               key={i}
               style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
               onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.02)" }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent" }}
             >
-              {result.columns.map(col => (
+              {columns.map(col => (
                 <td key={col} style={{
                   fontSize: 12, color: "var(--text-2)", padding: "9px 14px",
                   whiteSpace: "nowrap", maxWidth: 300,
                   overflow: "hidden", textOverflow: "ellipsis",
                 }}>
-                  {String(row[col] ?? "—")}
+                  {String(row[col] ?? "")}
                 </td>
               ))}
             </tr>
           ))}
-          {result.rows.length === 0 && (
+          {rows.length === 0 && (
             <tr>
-              <td colSpan={result.columns.length} style={{ padding: "32px 14px", textAlign: "center", color: "var(--text-3)", fontSize: 13 }}>
-                Query returned no results
+              <td colSpan={columns.length} style={{ padding: "32px 14px", textAlign: "center", color: "var(--text-3)", fontSize: 13 }}>
+                No rows
               </td>
             </tr>
           )}
@@ -66,8 +67,12 @@ function ResultTable({ result }: { result: ExplorerResult }) {
   )
 }
 
-// ── Schema browser ─────────────────────────────────────────────────────────
-function SchemaBrowser({ schema }: { schema: SchemaInfo | null }) {
+// -- Schema browser ---------------------------------------------------------
+function SchemaBrowser({ schema, selectedTable, onSelectTable }: {
+  schema: SchemaInfo | null
+  selectedTable: string | null
+  onSelectTable: (name: string) => void
+}) {
   const [openTable, setOpenTable] = useState<string | null>(null)
 
   if (!schema) {
@@ -83,12 +88,16 @@ function SchemaBrowser({ schema }: { schema: SchemaInfo | null }) {
       {schema.tables.map(t => (
         <div key={t.name} style={{ marginBottom: 4 }}>
           <div
-            onClick={() => setOpenTable(openTable === t.name ? null : t.name)}
+            onClick={() => {
+              setOpenTable(openTable === t.name ? null : t.name)
+              onSelectTable(t.name)
+            }}
             style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
               padding: "8px 12px", borderRadius: 6, cursor: "pointer",
-              background: openTable === t.name ? "rgba(108,99,255,0.08)" : "transparent",
-              color: openTable === t.name ? "var(--indigo)" : "var(--text-2)",
+              background: selectedTable === t.name ? "rgba(108,99,255,0.12)" : openTable === t.name ? "rgba(108,99,255,0.06)" : "transparent",
+              color: selectedTable === t.name ? "var(--indigo)" : openTable === t.name ? "var(--indigo)" : "var(--text-2)",
+              borderLeft: selectedTable === t.name ? "2px solid var(--indigo)" : "2px solid transparent",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
@@ -135,7 +144,7 @@ function SchemaBrowser({ schema }: { schema: SchemaInfo | null }) {
   )
 }
 
-// ── Main page ──────────────────────────────────────────────────────────────
+// -- Main page --------------------------------------------------------------
 export default function ExplorerPage() {
   const [question, setQuestion] = useState("")
   const [result, setResult] = useState<ExplorerResult | null>(null)
@@ -143,12 +152,37 @@ export default function ExplorerPage() {
   const [error, setError]     = useState<string | null>(null)
   const [history, setHistory] = useState<Array<{ question: string; sql: string; created_at: string }>>([])
   const [schema, setSchema]   = useState<SchemaInfo | null>(null)
+  const [selectedTable, setSelectedTable] = useState<string | null>(null)
+  const [preview, setPreview] = useState<PreviewData | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     api.explorer.history().then(r => setHistory(r.items)).catch(() => {})
-    api.explorer.schema().then(setSchema).catch(() => {})
+    api.explorer.schema().then(data => {
+      setSchema(data)
+      // Auto-select first table for preview
+      if (data.tables.length > 0) {
+        const first = data.tables[0].name
+        setSelectedTable(first)
+        loadPreview(first)
+      }
+    }).catch(() => {})
   }, [])
+
+  const loadPreview = (tableName: string) => {
+    setPreviewLoading(true)
+    api.explorer.preview(tableName).then(data => {
+      setPreview(data)
+      setPreviewLoading(false)
+    }).catch(() => setPreviewLoading(false))
+  }
+
+  const handleSelectTable = (name: string) => {
+    if (name === selectedTable) return
+    setSelectedTable(name)
+    loadPreview(name)
+  }
 
   const run = async (q: string) => {
     if (!q.trim() || loading) return
@@ -173,7 +207,7 @@ export default function ExplorerPage() {
   }
 
   return (
-    <div style={{ maxWidth: 1100 }}>
+    <div style={{ maxWidth: 1200 }}>
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
         <div>
@@ -200,7 +234,7 @@ export default function ExplorerPage() {
         {/* Schema sidebar */}
         <div style={{
           background: "var(--surface)", borderRadius: 10, overflow: "hidden",
-          border: "1px solid rgba(255,255,255,0.06)",
+          border: "1px solid rgba(255,255,255,0.06)", alignSelf: "start",
         }}>
           <div style={{
             padding: "10px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)",
@@ -215,7 +249,7 @@ export default function ExplorerPage() {
             )}
           </div>
           <div style={{ padding: "6px 0", maxHeight: 480, overflowY: "auto" }}>
-            <SchemaBrowser schema={schema} />
+            <SchemaBrowser schema={schema} selectedTable={selectedTable} onSelectTable={handleSelectTable} />
           </div>
         </div>
 
@@ -228,7 +262,7 @@ export default function ExplorerPage() {
               value={question}
               onChange={e => setQuestion(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") run(question) }}
-              placeholder='Ask anything — e.g. "Top 5 products by revenue"'
+              placeholder='Ask anything -- e.g. "Top 5 products by revenue"'
               style={{
                 width: "100%", height: 52, padding: "0 110px 0 16px", fontSize: 14,
                 background: "var(--surface)", border: "1px solid rgba(255,255,255,0.10)",
@@ -248,7 +282,7 @@ export default function ExplorerPage() {
                 opacity: !question.trim() ? 0.5 : 1,
               }}
             >
-              {loading ? "Running..." : "Run →"}
+              {loading ? "Running..." : "Run"}
             </button>
           </div>
 
@@ -322,13 +356,13 @@ export default function ExplorerPage() {
                     <span>{result.latencyMs}ms</span>
                   </div>
                 </div>
-                <ResultTable result={result} />
+                <DataTable columns={result.columns} rows={result.rows} />
               </div>
             </div>
           )}
 
           {/* History */}
-          {history.length > 0 && (
+          {history.length > 0 && !result && (
             <div>
               <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: 8 }}>
                 Recent queries
@@ -359,6 +393,39 @@ export default function ExplorerPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Data Preview Panel */}
+      <div style={{ marginTop: 28 }}>
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12,
+        }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-3)" }}>
+              Data Preview
+            </div>
+            {preview && (
+              <div style={{ fontSize: 12, color: "var(--text-2)", marginTop: 2 }}>
+                <span style={{ fontFamily: "var(--font-jetbrains-mono)", color: "var(--indigo)" }}>{preview.table}</span>
+                {" "}table &mdash; showing {preview.rows.length.toLocaleString()} of {preview.count.toLocaleString()} rows
+              </div>
+            )}
+          </div>
+          {previewLoading && (
+            <span style={{ fontSize: 11, color: "var(--text-3)" }}>Loading...</span>
+          )}
+        </div>
+
+        {preview && !previewLoading ? (
+          <DataTable columns={preview.columns} rows={preview.rows} maxHeight={520} />
+        ) : !previewLoading && (
+          <div style={{
+            border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8,
+            padding: "32px 0", textAlign: "center", color: "var(--text-3)", fontSize: 13,
+          }}>
+            Click a table in the schema browser to preview its data
+          </div>
+        )}
       </div>
     </div>
   )

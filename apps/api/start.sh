@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-# Railway injects PORT; ignore invalid overrides like "AUTO"
+# Railway injects PORT at runtime (often 8080). Only default for local Docker.
 case "${PORT}" in
   ""|AUTO|auto) PORT=8000 ;;
 esac
-echo "[start] listening on port ${PORT}"
+echo "[start] listening on port ${PORT} (Railway public target port must match this)"
 
 # Boot API immediately so Railway healthchecks and routing work
 echo "[start] starting api server..."

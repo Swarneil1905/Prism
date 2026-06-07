@@ -165,12 +165,10 @@ async def seed_postgres():
         import sqlalchemy as sa
         from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
         from sqlalchemy.orm import sessionmaker
-        import os
 
-        database_url = os.environ.get(
-            "DATABASE_URL",
-            "postgresql+asyncpg://postgres:postgres@localhost:5432/prism"
-        )
+        from app.core.db_url import resolve_database_url
+
+        database_url = resolve_database_url()
 
         engine = create_async_engine(database_url, echo=False)
         async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

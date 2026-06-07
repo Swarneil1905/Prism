@@ -243,8 +243,8 @@ export default function PromptsPage() {
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10 }}>
                     <StatPill label="Traces" value={selectedStats.traceCount.toString()} />
                     <StatPill label="Pass Rate" value={`${passRate}%`} color={Number(passRate) > 80 ? "var(--green)" : "var(--amber)"} />
-                    <StatPill label="Avg Cost" value={selectedStats.avgCost != null ? `$${selectedStats.avgCost.toFixed(4)}` : "—"} />
-                    <StatPill label="Avg Latency" value={selectedStats.avgLatencyMs != null ? `${Math.round(selectedStats.avgLatencyMs)}ms` : "—"} />
+                    <StatPill label="Avg Cost" value={selectedStats.avgCost != null ? `$${selectedStats.avgCost.toFixed(4)}` : "N/A"} />
+                    <StatPill label="Avg Latency" value={selectedStats.avgLatencyMs != null ? `${Math.round(selectedStats.avgLatencyMs)}ms` : "N/A"} />
                   </div>
                 </div>
               )}

@@ -1,6 +1,13 @@
 import type { Trace, Eval, PromptVersion, ExplorerResult } from "./types"
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+function normalizeApiUrl(url: string): string {
+  const trimmed = url.trim().replace(/\/+$/, "")
+  if (!trimmed) return "http://localhost:8000"
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed
+  return `https://${trimmed}`
+}
+
+const BASE = normalizeApiUrl(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000")
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {

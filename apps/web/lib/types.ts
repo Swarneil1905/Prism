@@ -33,7 +33,7 @@ export type Eval = {
   verdict: "pass" | "fail"
   score: number | null
   reasoning: string | null
-  evalType: "auto" | "human"
+  evalType: string
   judgeModel: string | null
   createdAt: string
   humanOverride: "pass" | "fail" | null

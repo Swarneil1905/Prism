@@ -41,7 +41,7 @@ export const api = {
   explorer: {
     query: (question: string, database_url?: string) =>
       request<ExplorerResult>("/api/v1/explorer/query", { method: "POST", body: JSON.stringify({ question, database_url }) }),
-    schema: () => request<{ tables: { name: string; columns: { name: string; type: string }[] }[] }>("/api/v1/explorer/schema"),
+    schema: () => request<{ tables: { name: string; columns: { name: string; type: string }[]; rowCount?: number }[] }>("/api/v1/explorer/schema"),
     history: () => request<{ items: { question: string; sql: string; created_at: string }[] }>("/api/v1/explorer/history"),
   },
   metrics: {

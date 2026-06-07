@@ -41,6 +41,7 @@ jobs:
         run: mypy apps/api/app/ --ignore-missing-imports
 
       - name: Run tests
+        working-directory: apps/api
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/prism_test
-        run: pytest apps/api/tests/ -v --tb=short
+        run: pytest tests/ -v --tb=short

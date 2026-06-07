@@ -1,4 +1,4 @@
-import type { Trace, Span, Eval, PromptVersion, ExplorerResult } from "./types"
+import type { Trace, Eval, PromptVersion, ExplorerResult } from "./types"
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 

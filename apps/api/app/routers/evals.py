@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.db.session import get_db
 from app.models.eval import Eval
-from app.schemas.eval import EvalListResponse, EvalStats, EvalOverride
+from app.schemas.eval import EvalOut, EvalListResponse, EvalStats, EvalOverride
 from app.services.eval import run_eval
 from typing import Optional
 from datetime import datetime, timedelta
@@ -31,7 +31,7 @@ async def list_evals(
 
     total = (await db.execute(select(func.count()).select_from(q.subquery()))).scalar_one()
     rows = (await db.execute(q.offset((page - 1) * limit).limit(limit))).scalars().all()
-    return EvalListResponse(items=rows, total=total)
+    return EvalListResponse(items=[EvalOut.model_validate(r) for r in rows], total=total)
 
 
 @router.get("/stats", response_model=EvalStats)

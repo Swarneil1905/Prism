@@ -7,6 +7,7 @@ from app.models.trace import Trace
 from app.models.eval import Eval
 import anthropic
 from app.core.config import settings
+from app.utils.anthropic import response_text
 
 JUDGE_MODEL = "claude-haiku-4-5-20251001"
 
@@ -37,7 +38,7 @@ async def run_eval(trace_id: uuid.UUID, db: AsyncSession) -> dict:
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": user_msg}],
         )
-        data = json.loads(resp.content[0].text)
+        data = json.loads(response_text(resp))
         verdict = data.get("verdict", "fail")
         score = float(data.get("score", 0.0))
         reasoning = data.get("reasoning", "")

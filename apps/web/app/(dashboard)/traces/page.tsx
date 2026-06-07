@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { api } from "@/lib/api-client"
-import type { Trace, Span } from "@/lib/types"
+import type { Trace } from "@/lib/types"
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function timeAgo(iso: string) {

@@ -48,7 +48,7 @@ async def get_prompt_versions(name: str, db: AsyncSession = Depends(get_db)):
             name=pv.name,
             version=pv.version,
             content=pv.content,
-            created_at=pv.created_at,
+            createdAt=pv.created_at,
             stats=stats_dict,
         ))
     return result

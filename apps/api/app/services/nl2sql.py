@@ -9,6 +9,7 @@ from app.models.trace import Trace
 from app.models.span import Span
 import anthropic
 from app.core.config import settings
+from app.utils.anthropic import response_text
 
 DEMO_DB = Path(__file__).parent.parent.parent / "data" / "demo.db"
 MODEL = "claude-haiku-4-5-20251001"
@@ -101,7 +102,7 @@ class NL2SQLService:
             model=MODEL, max_tokens=512, system=SQL_SYSTEM,
             messages=[{"role": "user", "content": prompt}],
         )
-        sql = self._clean_sql(resp.content[0].text)
+        sql = self._clean_sql(response_text(resp))
         gen_ms = int((datetime.utcnow() - t_gen).total_seconds() * 1000)
         in_tok = resp.usage.input_tokens
         out_tok = resp.usage.output_tokens
@@ -118,7 +119,7 @@ class NL2SQLService:
                 model=MODEL, max_tokens=512, system=FIX_SYSTEM,
                 messages=[{"role": "user", "content": fix_prompt}],
             )
-            sql = self._clean_sql(fix_resp.content[0].text)
+            sql = self._clean_sql(response_text(fix_resp))
             fix_ms = int((datetime.utcnow() - t_exec).total_seconds() * 1000)
             await self._save_span(trace.id, "sql-retry", "llm", fix_prompt, sql, fix_ms, MODEL)
             rows, cols = self._execute(db_path, sql)

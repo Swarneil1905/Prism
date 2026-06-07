@@ -37,7 +37,11 @@ async def list_traces(
 
     q = q.offset((page - 1) * limit).limit(limit).options(selectinload(Trace.spans))
     rows = (await db.execute(q)).scalars().all()
-    return TraceListResponse(items=rows, total=total, page=page)
+    return TraceListResponse(
+        items=[TraceOut.model_validate(r) for r in rows],
+        total=total,
+        page=page,
+    )
 
 
 @router.get("/{trace_id}", response_model=TraceOut)

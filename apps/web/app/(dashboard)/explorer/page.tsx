@@ -5,7 +5,7 @@ import type { ExplorerResult } from "@/lib/types"
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type SchemaColumn = { name: string; type: string }
-type SchemaTable  = { name: string; columns: SchemaColumn[] }
+type SchemaTable  = { name: string; columns: SchemaColumn[]; rowCount?: number }
 type SchemaInfo   = { tables: SchemaTable[] }
 
 // ── Example queries ────────────────────────────────────────────────────────
@@ -99,7 +99,14 @@ function SchemaBrowser({ schema }: { schema: SchemaInfo | null }) {
               </svg>
               <span style={{ fontFamily: "var(--font-jetbrains-mono)", fontSize: 12 }}>{t.name}</span>
             </div>
-            <span style={{ fontSize: 9, color: "var(--text-3)" }}>{t.columns.length} cols</span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
+              {t.rowCount !== undefined && (
+                <span style={{ fontSize: 9, fontWeight: 600, color: "var(--indigo)", fontFamily: "var(--font-jetbrains-mono)" }}>
+                  {t.rowCount.toLocaleString()} rows
+                </span>
+              )}
+              <span style={{ fontSize: 9, color: "var(--text-3)" }}>{t.columns.length} cols</span>
+            </div>
           </div>
 
           {openTable === t.name && (
@@ -201,6 +208,11 @@ export default function ExplorerPage() {
             letterSpacing: "0.08em", color: "var(--text-3)",
           }}>
             Schema &middot; {schema?.tables.length ?? 0} tables
+            {schema && (
+              <div style={{ fontSize: 9, fontWeight: 400, textTransform: "none", letterSpacing: 0, color: "var(--text-3)", marginTop: 2 }}>
+                {schema.tables.reduce((sum, t) => sum + (t.rowCount ?? 0), 0).toLocaleString()} total rows
+              </div>
+            )}
           </div>
           <div style={{ padding: "6px 0", maxHeight: 480, overflowY: "auto" }}>
             <SchemaBrowser schema={schema} />

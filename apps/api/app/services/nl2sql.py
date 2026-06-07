@@ -211,15 +211,16 @@ class NL2SQLService:
 
         total_ms = int((datetime.utcnow() - t0).total_seconds() * 1000)
 
-        if trace is not None:
+        db = self.db
+        if trace is not None and db is not None:
             try:
                 trace.output = sql
                 trace.ended_at = datetime.utcnow()
                 trace.total_latency = total_ms
                 trace.total_cost = cost
-                await self.db.commit()
+                await db.commit()
             except Exception:
-                await self.db.rollback()
+                await db.rollback()
 
         return {
             "traceId": str(trace_id or workflow_id),
